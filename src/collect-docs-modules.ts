@@ -16,6 +16,7 @@ type DocModule = {
 
 export default function collectDocsModules(modulesTree: ModulesMap = sourceItems): Array<DocModule> {
     return Object.keys(modulesTree).reduce<Array<DocModule>>((docs, key) => {
+        if (!(modulesTree[key] instanceof Object)) return docs
         if (!modulesTree[key].__esModule) return docs.concat(collectDocsModules(modulesTree[key]))
         return docs.concat({
             name: modulesTree[key].name || key.endsWith('.docs') ? key.slice(0, -5) : key,
