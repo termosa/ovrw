@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { MDXProvider } from '@mdx-js/react'
 import collectDocsModules from './collect-docs-modules'
 import useModule from './use-module'
@@ -8,6 +8,7 @@ import CodeComponent from './code-component'
 import TableComponent from './table-component'
 import TableDataComponent from './table-data-component'
 import TableHeadComponent from './table-head-component'
+import filterModules from './filter-modules'
 
 const Page = styled.div`
     font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -27,12 +28,21 @@ const SideMenu = styled.div`
     box-sizing: border-box;
 `
 
+const SearchInput = styled.input`
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 100%;
+    margin-bottom: 1em;
+`
+
 const MenuItem = styled.p`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
     font-weight: ${p => p.selected ? 'bold' : 'normal'};
+    margin: 0.3em;
+    padding: 0.2em;
 `
 
 const ContentContainer = styled.div`
@@ -65,18 +75,27 @@ export default function Documentation(): React.ReactElement {
 
     const sorted = useMemo(() => modules.sort((a, b) => (a.name < b.name ? -1 : 1)), [modules])
 
+    const [query, setQuery] = useState('')
+    const filtered = useMemo(() => filterModules(sorted, query), [sorted])
+
     return (
         <Page>
             <SideMenu>
                 <h2>Library</h2>
-                {sorted.map((item) => (
+                <SearchInput
+                    type="search"
+                    placeholder="Search in library for ..."
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                />
+                {filtered.map((module) => (
                     <MenuItem
-                        key={item.name}
-                        title={item.name}
-                        onClick={() => setCurrent(item)}
-                        selected={item.name === current?.name}
+                        key={module.name}
+                        title={module.name}
+                        onClick={() => setCurrent(module)}
+                        selected={module.name === current?.name}
                     >
-                        {item.name}
+                        {module.name}
                     </MenuItem>
                 ))}
             </SideMenu>

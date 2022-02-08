@@ -9,7 +9,7 @@ type ESModule = { __esModule: boolean; default: React.FC }
 
 type ModulesMap = JSONType<ESModule>
 
-type DocModule = {
+export type DocModule = {
   name: string
   component: React.FC
 }
